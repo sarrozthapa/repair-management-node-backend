@@ -52,6 +52,8 @@ io.use((socket, next) => __awaiter(void 0, void 0, void 0, function* () {
             if (err)
                 return next(err);
             const authToken = socket.request.cookies.token;
+            console.log(authToken);
+            console.log(socket.request);
             const decodedData = jsonwebtoken_1.default.verify(authToken, process.env.TOKEN_SECRET);
             socket.user = yield User_1.default.findById(decodedData.id);
             return next();
