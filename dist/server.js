@@ -54,6 +54,7 @@ const io = new socket_io_1.Server(server, {
 //     );
 // })
 io.on('connection', (socket) => {
+    console.log(socket);
     console.log('connected', socket.id);
     //userSocketIDs.set(socket.user.id,socket.id);
     socket.on('disconnect', () => {
