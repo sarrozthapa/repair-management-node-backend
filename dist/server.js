@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -20,8 +11,6 @@ const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const dbConn_1 = require("./helper/dbConn");
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const User_1 = __importDefault(require("./models/User"));
 const helper_1 = require("./helper/helper");
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
@@ -46,27 +35,27 @@ const io = new socket_io_1.Server(server, {
         credentials: true,
     }
 });
-io.use((socket, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const socketAuthenticator = (err, socket, next) => __awaiter(void 0, void 0, void 0, function* () {
-        try {
-            if (err)
-                return next(err);
-            const authToken = socket.request.cookies.token;
-            console.log(authToken);
-            console.log(socket.request);
-            const decodedData = jsonwebtoken_1.default.verify(authToken, process.env.TOKEN_SECRET);
-            socket.user = yield User_1.default.findById(decodedData.id);
-            return next();
-        }
-        catch (error) {
-            console.log(error);
-        }
-    });
-    (0, cookie_parser_1.default)()(socket.request, socket.request.res, (err) => __awaiter(void 0, void 0, void 0, function* () { return yield socketAuthenticator(err, socket, next); }));
-}));
+// io.use(async(socket:any,next)=>{
+//      const socketAuthenticator=async(err:any,socket:any,next:any)=>{
+//         try{
+//             if(err) return next(err);
+//             const authToken=socket.request.cookies.token;
+//             console.log(authToken);
+//             const decodedData=jwt.verify(authToken,process.env.TOKEN_SECRET);
+//             socket.user=await User.findById(decodedData.id)
+//             return next();
+//         }catch(error)
+//         {
+//             console.log(error);
+//         }
+//     }
+//     cookieParser()(socket.request,socket.request.res,
+//         async(err)=>await socketAuthenticator(err,socket,next)
+//     );
+// })
 io.on('connection', (socket) => {
     console.log('connected', socket.id);
-    exports.userSocketIDs.set(socket.user.id, socket.id);
+    //userSocketIDs.set(socket.user.id,socket.id);
     socket.on('disconnect', () => {
         console.log('disconnected', socket.id);
         console.log('/n');
