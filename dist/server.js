@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -12,6 +21,8 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const dbConn_1 = require("./helper/dbConn");
 const helper_1 = require("./helper/helper");
+const messageRoute_1 = __importDefault(require("./routes/messageRoute"));
+const Message_1 = __importDefault(require("./models/Message"));
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
 dotenv_1.default.config({
@@ -75,10 +86,33 @@ io.on('connection', (socket) => {
     socket.on('STATUS_CHANGED', ({ _id }) => {
         io.to((0, helper_1.getSockets)([_id])).emit('REFETCH_MYTASKS');
     });
+    socket.on('NEW_MESSAGE', (_a) => __awaiter(void 0, [_a], void 0, function* ({ sender, content }) {
+        console.log(sender);
+        const messageForRealTime = {
+            content,
+            sender: {
+                _id: sender._id.toString(),
+                username: sender.username
+            },
+            createdAt: new Date().toISOString()
+        };
+        const messageForDB = {
+            content,
+            sender: {
+                _id: sender._id.toString(),
+                username: sender.username
+            },
+            createdAt: new Date().toISOString()
+        };
+        yield Message_1.default.create(messageForDB);
+        io.sockets.emit('NEW_MESSAGE', messageForRealTime);
+        console.log('message sent');
+    }));
 });
 app.get('/', (req, res) => {
     return res.send("hello");
 });
+app.use('/api/messages', messageRoute_1.default);
 (0, dbConn_1.dbConn)(process.env.MONGODB_URI).then(() => {
     console.log('connected to database');
     server.listen(process.env.PORT, () => {
