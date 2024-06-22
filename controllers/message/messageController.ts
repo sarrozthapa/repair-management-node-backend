@@ -3,7 +3,11 @@ import Message from "../../models/Message";
 
 const getAllMessages=async(req:Request,res:Response)=>{
     try{
-        const messages = await Message.find({}).lean();
+        let {page}:any=req.query;
+        page=Number(page);
+        console.log(page);
+        const limit=20;
+        const messages = await Message.find({}).lean().sort({createdAt:-1}).skip((page-1)*limit).limit(limit);
         return res.status(200).json({
             success:true,
             messages

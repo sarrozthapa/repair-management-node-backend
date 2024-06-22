@@ -15,7 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Message_1 = __importDefault(require("../../models/Message"));
 const getAllMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const messages = yield Message_1.default.find({}).lean();
+        let { page } = req.query;
+        page = Number(page);
+        console.log(page);
+        const limit = 20;
+        const messages = yield Message_1.default.find({}).lean().sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit);
         return res.status(200).json({
             success: true,
             messages
