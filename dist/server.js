@@ -77,14 +77,16 @@ io.on('connection', (socket) => {
         exports.userSocketIDs.delete(socket.user);
         console.log('/n');
     });
-    socket.on('ASSIGN_TASK', (task) => {
-        io.to((0, helper_1.getSockets)([task._id])).emit('REFETCH_MYTASKS');
+    socket.on('ASSIGN_TASK', ({ _id, customer }) => {
+        console.log(_id, customer);
+        io.to((0, helper_1.getSockets)([_id, customer])).emit('REFETCH_MYTASKS');
     });
-    socket.on('TASK_DELETED', ({ _id }) => {
-        io.to((0, helper_1.getSockets)([_id])).emit('REFETCH_MYTASKS');
+    socket.on('TASK_DELETED', ({ _id, customer }) => {
+        io.to((0, helper_1.getSockets)([_id, customer])).emit('REFETCH_MYTASKS');
     });
-    socket.on('STATUS_CHANGED', ({ _id }) => {
-        io.to((0, helper_1.getSockets)([_id])).emit('REFETCH_MYTASKS');
+    socket.on('STATUS_CHANGED', ({ _id, customer }) => {
+        console.log('check');
+        io.to((0, helper_1.getSockets)([_id, customer])).emit('REFETCH_MYTASKS');
     });
     socket.on('NEW_MESSAGE', (_a) => __awaiter(void 0, [_a], void 0, function* ({ sender, content }) {
         console.log(sender);
