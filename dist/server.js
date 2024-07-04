@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
         io.to((0, helper_1.getSockets)([_id, customer])).emit('REFETCH_MYTASKS');
     });
     socket.on('STATUS_CHANGED', ({ _id, customer }) => {
-        console.log('check');
+        console.log(_id, customer, 'status changed');
         io.to((0, helper_1.getSockets)([_id, customer])).emit('REFETCH_MYTASKS');
     });
     socket.on('NEW_MESSAGE', (_a) => __awaiter(void 0, [_a], void 0, function* ({ sender, content }) {
